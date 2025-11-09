@@ -20,5 +20,15 @@ I document is a Word Document. I use markitdown to convert into [markdown](https
 
 ## Deployment
 
-[//]: # (TODO)
+I've successfully deployed this app on my home server. The setup involves Docker, Portainer (as the Docker interface) and Cloudflare tunnels.
+
+<img width="1575" height="508" alt="image" src="https://github.com/user-attachments/assets/7936a699-c496-4dca-ac55-dc357515afb9" />
+
+<img width="1565" height="799" alt="image" src="https://github.com/user-attachments/assets/dd8b4342-f1ad-46ed-918a-5b471719ce99" />
+
+<img width="1533" height="774" alt="image" src="https://github.com/user-attachments/assets/d6421d6c-8adf-47d6-95b8-bc7b4a8e3749" />
+
+The App can be accessed via: https://fantasticfacts.iqfareez.com/swagger/index.html
+
+<img width="1193" height="799" alt="image" src="https://github.com/user-attachments/assets/acea8ec9-ae23-45d2-8885-8741e105e09f" />
 
