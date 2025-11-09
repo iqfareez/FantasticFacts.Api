@@ -1,0 +1,9 @@
+@FantasticFacts.Api_HostAddress = http://localhost:5218
+
+GET {{FantasticFacts.Api_HostAddress}}/FantasticFact/
+Accept: application/json
+
+GET {{FantasticFacts.Api_HostAddress}}/FantasticFact/{id}
+Accept: application/json
+
+###

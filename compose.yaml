@@ -1,0 +1,7 @@
+﻿services:
+  fantasticfacts.api:
+    image: fantasticfacts.api
+    build:
+      context: .
+      dockerfile: FantasticFacts.Api/Dockerfile
+
