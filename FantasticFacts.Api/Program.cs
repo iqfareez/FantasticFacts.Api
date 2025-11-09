@@ -1,3 +1,4 @@
+using FantasticFacts.Api.Handlers;
 using FantasticFacts.Entities.Contents;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
@@ -19,31 +20,15 @@ public class Program
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
-        builder.Services.AddDbContext<AppDbContext>(options =>
-        {
-            options.UseSqlite(connection);
-        });
+        builder.Services.AddDbContext<AppDbContext>(options => { options.UseSqlite(connection); });
 
         var app = builder.Build();
-        
+
         // Run database migrations at startup
-        using (var scope = app.Services.CreateScope())
-        {
-            var appDbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-            if (appDbContext.Database.GetPendingMigrations().Any())
-            {
-                appDbContext.Database.Migrate();
-            }
-        }
+        app.ApplyMigrations<AppDbContext>();
 
-        // Configure the HTTP request pipeline.
-        if (app.Environment.IsDevelopment())
-        {
-            app.UseSwagger();
-            app.UseSwaggerUI();
-        }
-
-        app.UseHttpsRedirection();
+        app.UseSwagger();
+        app.UseSwaggerUI();
 
         app.UseAuthorization();
 
