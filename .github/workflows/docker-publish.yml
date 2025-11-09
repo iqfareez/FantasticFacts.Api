@@ -67,18 +67,31 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
-      # Build and push Docker image with Buildx (don't push on PR)
-      # https://github.com/docker/build-push-action
-      - name: Build and push Docker image
-        id: build-and-push
-        uses: docker/build-push-action@0565240e2d4ab88bba5387d719585280857ece09 # v5.0.0
-        with:
-          context: .
-          push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+      # Build Docker image using docker-compose
+      - name: Build Docker image with docker-compose
+        id: build
+        run: |
+          docker compose -f compose.yaml build
+          
+          TAGS="${{ steps.meta.outputs.tags }}"
+          for tag in ${TAGS}; do
+            docker tag fantasticfacts.api ${tag}
+          done
+
+      # Push Docker image (don't push on PR)
+      - name: Push Docker image
+        id: push
+        if: github.event_name != 'pull_request'
+        run: |
+          # Push all tags to GHCR
+          TAGS="${{ steps.meta.outputs.tags }}"
+          for tag in ${TAGS}; do
+            docker push ${tag}
+          done
+          
+          # Get digest of the first tag for signing
+          DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' $(echo ${TAGS} | awk '{print $1}') | cut -d'@' -f2)
+          echo "digest=${DIGEST}" >> $GITHUB_OUTPUT
 
       # Sign the resulting Docker image digest except on PRs.
       # This will only write to the public Rekor transparency log when the Docker
@@ -90,7 +103,7 @@ jobs:
         env:
           # https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions#using-an-intermediate-environment-variable
           TAGS: ${{ steps.meta.outputs.tags }}
-          DIGEST: ${{ steps.build-and-push.outputs.digest }}
+          DIGEST: ${{ steps.push.outputs.digest }}
         # This step uses the identity token to provision an ephemeral certificate
         # against the sigstore community Fulcio instance.
         run: echo "${TAGS}" | xargs -I {} cosign sign --yes {}@${DIGEST}
