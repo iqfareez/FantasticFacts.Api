@@ -4,6 +4,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FantasticFacts.Api.Controllers;
 
+/// <summary>
+/// Provides endpoints to read fantastic facts.
+/// </summary>
 [ApiController]
 [Route("[controller]")]
 public class FantasticFactController : ControllerBase
@@ -17,6 +20,11 @@ public class FantasticFactController : ControllerBase
         _appDbContext = appDbContext;
     }
 
+    /// <summary>
+    /// Gets a single fantastic fact by its identifier.
+    /// </summary>
+    /// <param name="id">The fact identifier.</param>
+    /// <returns>The requested fact when found, otherwise 404.</returns>
     [HttpGet("{id:int}", Name = "GetFantasticFact")]
     public async Task<IActionResult> Get(int id)
     {
@@ -29,6 +37,13 @@ public class FantasticFactController : ControllerBase
         return Ok(fact);
     }
     
+    /// <summary>
+    /// Searches and paginates fantastic facts.
+    /// </summary>
+    /// <param name="keyword">Optional text to filter by content.</param>
+    /// <param name="page">1-based page number.</param>
+    /// <param name="pageSize">Number of items per page.</param>
+    /// <returns>A paged result containing facts and total count.</returns>
     [HttpGet(Name = "SearchFantasticFacts")]
     public async Task<IActionResult> GetAll(string? keyword = null, int page = 1, int pageSize = 10)
     {

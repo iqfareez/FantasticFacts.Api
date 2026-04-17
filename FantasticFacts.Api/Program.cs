@@ -2,6 +2,7 @@ using FantasticFacts.Api.Handlers;
 using FantasticFacts.Entities.Contents;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 
 namespace FantasticFacts.Api;
 
@@ -19,7 +20,21 @@ public class Program
         builder.Services.AddControllers();
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddSwaggerGen();
+        builder.Services.AddSwaggerGen(options =>
+        {
+            options.SwaggerDoc("v1", new OpenApiInfo
+            {
+                Title = "Fantastic Facts API",
+                Version = "v1"
+            });
+
+            var xmlFile = $"{typeof(Program).Assembly.GetName().Name}.xml";
+            var xmlDocPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+            if (File.Exists(xmlDocPath))
+            {
+                options.IncludeXmlComments(xmlDocPath, includeControllerXmlComments: true);
+            }
+        });
         builder.Services.AddDbContext<AppDbContext>(options => { options.UseSqlite(connection); });
 
         var app = builder.Build();
